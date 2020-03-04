@@ -5,3 +5,4 @@
 
 ## Tools
 - Apache Directory
+    - [How to add a new user?] (http://opendesignarch.blogspot.com/2012/12/adding-new-user-to-apacheds-using.html)
