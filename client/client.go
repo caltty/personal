@@ -13,7 +13,7 @@ func Conn_Bind() {
 	log.Println("connect success!")
 	defer l.Close()
 
-	err = l.Bind("uid=jason,ou=users,ou=system", "jason")
+	err = l.Bind("uid=admin,ou=system", "secret")
 	if err != nil {
 		log.Fatal(err)
 	}
