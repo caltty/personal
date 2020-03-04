@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"gopkg.in/ldap.v3"
@@ -10,10 +10,12 @@ func Conn_Bind() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("connect success!")
 	defer l.Close()
 
 	err = l.Bind("uid=admin,ou=system", "secret")
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("bind success!")
 }
