@@ -6,14 +6,14 @@ import (
 	"log"
 )
 
-func conn_bind(url string, username string, password string) *ldap.Conn {
+func conn_bind(url string, bindusername string, bindpassword string) *ldap.Conn {
 	l, err := ldap.DialURL(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("connect success!")
 
-	err = l.Bind(username, password)
+	err = l.Bind(bindusername, bindpassword)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,5 +48,45 @@ func Conn_Search(url string, baseDn string, username string, password string) {
 
 	for _, entry := range sr.Entries {
 		fmt.Printf("%s: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+	}
+}
+
+// auth domain account
+func Auth(url string, basedn string, bindusername string, bindpassword string, username string, password string) {
+
+	l := conn_bind(url, bindusername, bindpassword)
+	defer l.Close()
+
+	// Search for the given username
+	searchRequest := ldap.NewSearchRequest(
+		basedn,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		// fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", username),
+		fmt.Sprintf("(&(objectClass=organizationalPerson)(cn=%s))", username), // TODO: cn or uid or tbd...
+		[]string{"dn"},
+		nil,
+	)
+
+	sr, err := l.Search(searchRequest)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(sr.Entries) != 1 {
+		log.Fatal("User does not exist or too many entries returned")
+	}
+
+	userdn := sr.Entries[0].DN
+
+	// Bind as the user to verify their password
+	err = l.Bind(userdn, password)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Rebind as the read only user for any further queries
+	err = l.Bind(bindusername, bindpassword)
+	if err != nil {
+		log.Fatal(err)
 	}
 }

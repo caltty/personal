@@ -8,7 +8,9 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 ### Requriement level
 - API to be implemented
   - [x] Bind
+    - [x] unit test
   - [x] Search
+    - [x] unit test
   - [ ] Authenticate
   
 - [ ] SSL support
