@@ -28,15 +28,16 @@ func Conn_Bind(url string, username string, password string) {
 }
 
 // This example demonstrates how to use the search interface
-func Conn_Search(url string, baseDn string, username string, password string) {
-	l := conn_bind(url, username, password)
+func Conn_Search(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
+	l := conn_bind(url, bindUsername, bindPassword)
 	defer l.Close()
 
 	searchRequest := ldap.NewSearchRequest(
 		// "dc=example,dc=com", // The base dn to search
 		baseDn,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		"(&(objectClass=organizationalPerson))", // The filter to apply
+		// "(&(objectClass=organizationalPerson))", // The filter to apply
+		filter,
 		[]string{"dn", "cn"},                    // A list attributes to retrieve
 		nil,
 	)

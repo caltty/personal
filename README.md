@@ -1,4 +1,4 @@
-# Go-LDAP demo
+# Go-LDAP/AD demo
 This is a sample demo to show how integrate ldap api within go to connect a AD or other LDAP server.
 
 ## Dependencies
@@ -12,8 +12,12 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
   - [x] Search
     - [x] unit test
   - [ ] Authenticate
+    - [x] auth with cn
+    - [ ] auth with dn
+    - [ ] auth with s
+    - [ ] unit test
   
-- [ ] SSL support
+- [ ] SSL/TLS support
 
 ### Coding Level
 - ~~how to reuse method (for the defer concern)~~
@@ -21,6 +25,9 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 - Rename symbols of go always fails
 
 
-## Other Tools
-- Apache Directory
+## Env & Tools
+- Setting up LDAP/AD Server
+  - AD Sever (Windows)
+    - [Windows Server 2019 – Active Directory Installation Beginners Guide](https://www.moderndeployment.com/windows-server-2019-active-directory-installation-beginners-guide/)
+  - [Apache Directory](https://directory.apache.org/)
     - [How to add a new user?](http://opendesignarch.blogspot.com/2012/12/adding-new-user-to-apacheds-using.html)

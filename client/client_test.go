@@ -13,8 +13,9 @@ func TestConn_Bind_testaccount(t *testing.T) {
 	Conn_Bind(URL, BIND_USERNAME, BIND_PASSWORD)
 }
 
-func TestConn_Search(t *testing.T) {
-	Conn_Search(URL, BASE_DN, BIND_USERNAME, BIND_PASSWORD)
+func TestConn_Search_Person(t *testing.T) {
+	filter_person := "(&(objectClass=organizationalPerson))"
+	Conn_Search(URL, BASE_DN, BIND_USERNAME, BIND_PASSWORD, filter_person)
 }
 
 func Test_Auth(t *testing.T) {
