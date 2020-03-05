@@ -18,6 +18,7 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 ### Coding Level
 - ~~how to reuse method (for the defer concern)~~
   - each defer will be invoked after method. Fix - need to provide private api
+- Rename symbols of go always fails
 
 
 ## Other Tools
