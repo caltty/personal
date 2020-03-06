@@ -3,6 +3,10 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 
 ## Dependencies
 - [go-ldap/ldap](https://github.com/go-ldap/ldap/tree/master/v3)
+- Setting up AD/Server
+  - [x] Windows AD Server
+  - [x] Apache Directory Server
+  - [ ] SSL/TLS support
 
 ## TODO
 ### Requriement level
@@ -16,14 +20,21 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
     - [ ] auth with dn
     - [ ] auth with s
     - [ ] unit test
-  - [ ] Modify attribute
-    - [ ] unit test
+  - [x] Modify attribute
+    - [x] unit test
   
 - [ ] SSL/TLS support
 
+### Design & Maintainability Level
+- More Object-Oriented
+  - [ ] Abstract struct/interface
+    - [ ] Binding struct
+    - [ ] Searching struct
+    - [ ] Searching interface
+
 ### Problem solved (coding level)
 - ~~how to reuse method (for the defer concern)~~
-  - each defer will be invoked after method. Fix - need to provide private api
+  - [x] each defer will be invoked after method. Fix - need to provide private api
 - Rename symbols of go always fails
 
 
