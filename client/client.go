@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func conn_bind(url string, bindusername string, bindpassword string) *ldap.Conn {
+func conn_bind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
 	l, err := ldap.DialURL(url)
 	if err != nil {
 		log.Fatal(err)
@@ -19,17 +19,17 @@ func conn_bind(url string, bindusername string, bindpassword string) *ldap.Conn 
 	}
 	log.Println("bind success!")
 
-	return l
+	return l, err
 }
 
 func Conn_Bind(url string, username string, password string) {
-	l := conn_bind(url, username, password)
+	l, _ := conn_bind(url, username, password)
 	defer l.Close()
 }
 
 // This example demonstrates how to use the search interface
 func Conn_Search(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
-	l := conn_bind(url, bindUsername, bindPassword)
+	l, err := conn_bind(url, bindUsername, bindPassword)
 	defer l.Close()
 
 	searchRequest := ldap.NewSearchRequest(
@@ -38,7 +38,7 @@ func Conn_Search(url string, baseDn string, bindUsername string, bindPassword st
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		// "(&(objectClass=organizationalPerson))", // The filter to apply
 		filter,
-		[]string{"dn", "cn"},                    // A list attributes to retrieve
+		[]string{"dn", "cn"}, // A list attributes to retrieve
 		nil,
 	)
 
@@ -55,7 +55,7 @@ func Conn_Search(url string, baseDn string, bindUsername string, bindPassword st
 // auth domain account
 func Auth(url string, basedn string, bindusername string, bindpassword string, username string, password string) {
 
-	l := conn_bind(url, bindusername, bindpassword)
+	l, err := conn_bind(url, bindusername, bindpassword)
 	defer l.Close()
 
 	// Search for the given username
@@ -87,6 +87,22 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, u
 
 	// Rebind as the read only user for any further queries
 	err = l.Bind(bindusername, bindpassword)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func Conn_Modify(url string, bindUsername string, bindPassword string, dn string) {
+	l, err := conn_bind(url, bindUsername, bindPassword)
+	defer l.Close()
+
+	// Add a description, and replace the mail attributes
+	modify := ldap.NewModifyRequest(dn, nil)
+	// modify.Add("description", []string{"An test user yyyyy"})
+	modify.Replace("description", []string{"An test user zzzz"})
+	// modify.Replace("mail", []string{"user@example.org"})
+
+	err = l.Modify(modify)
 	if err != nil {
 		log.Fatal(err)
 	}

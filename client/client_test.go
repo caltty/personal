@@ -21,6 +21,11 @@ func TestConn_Search_Person(t *testing.T) {
 func Test_Auth(t *testing.T) {
 	username := "test"
 	password := "P@ssw0rd"
-	
+
 	Auth(URL, BASE_DN, BIND_USERNAME, BIND_PASSWORD, username, password)
+}
+
+func Test_Conn_Modify(t *testing.T) {
+	testDn := "CN=test,CN=Users,DC=hpdm,DC=com"
+	Conn_Modify(URL, BIND_USERNAME, BIND_PASSWORD, testDn)
 }
