@@ -27,5 +27,7 @@ func Test_Auth(t *testing.T) {
 
 func Test_Conn_Modify(t *testing.T) {
 	testDn := "CN=test,CN=Users,DC=hpdm,DC=com"
-	Conn_Modify(URL, BIND_USERNAME, BIND_PASSWORD, testDn)
+	attrType := "description"
+	attrVals := []string{"An test user description"}
+	Conn_Modify_Attr(URL, BIND_USERNAME, BIND_PASSWORD, testDn, attrType, attrVals)
 }

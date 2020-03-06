@@ -92,14 +92,14 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, u
 	}
 }
 
-func Conn_Modify(url string, bindUsername string, bindPassword string, dn string) {
+func Conn_Modify_Attr(url string, bindUsername string, bindPassword string, dn string, attrType string, attrVals []string) {
 	l, err := conn_bind(url, bindUsername, bindPassword)
 	defer l.Close()
 
 	// Add a description, and replace the mail attributes
 	modify := ldap.NewModifyRequest(dn, nil)
 	// modify.Add("description", []string{"An test user yyyyy"})
-	modify.Replace("description", []string{"An test user zzzz"})
+	modify.Replace(attrType, attrVals)
 	// modify.Replace("mail", []string{"user@example.org"})
 
 	err = l.Modify(modify)
