@@ -27,12 +27,13 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
   - [ ] Windows AD Server 
 
   - [ ] Apache Directory Server
-    - By default, Apache Directory will create self-signed certficated
-    - For TLS support, just go to Cofiguration/LDAPS Server/Advanced -> Enable TLS would be okay
+    - [X] By default, Apache Directory will create self-signed certficate
+    -   For TLS support, just go to Cofiguration/LDAPS Server/Advanced -> Enable TLS would be okay
       - No need to change port
+    - [ ] TLS details
 
 
-      
+
 ### Design & Maintainability Level
 - More Object-Oriented
   - [ ] Abstract struct/interface
