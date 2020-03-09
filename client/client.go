@@ -1,9 +1,11 @@
 package client
 
 import (
+	"crypto/tls"
 	"fmt"
-	"gopkg.in/ldap.v3"
 	"log"
+
+	"gopkg.in/ldap.v3"
 )
 
 func conn_bind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
@@ -106,4 +108,23 @@ func Conn_Modify_Attr(url string, bindUsername string, bindPassword string, dn s
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// This example demonstrates how to start a TLS connection
+func StartTLS(url string) {
+	l, err := ldap.DialURL(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer l.Close()
+
+	log.Println(l.TLSConnectionState())
+	// Reconnect with TLS
+	err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
+	log.Println(l.TLSConnectionState())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Operations via l are now encrypted
 }

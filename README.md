@@ -4,9 +4,9 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 ## Dependencies
 - [go-ldap/ldap](https://github.com/go-ldap/ldap/tree/master/v3)
 - Setting up AD/Server
-  - [x] Windows AD Server
+  - [x] Windows AD Server 
   - [x] Apache Directory Server
-  - [ ] SSL/TLS support
+
 
 ## TODO
 ### Requriement level
@@ -24,7 +24,15 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
     - [x] unit test
   
 - [ ] SSL/TLS support
+  - [ ] Windows AD Server 
 
+  - [ ] Apache Directory Server
+    - By default, Apache Directory will create self-signed certficated
+    - For TLS support, just go to Cofiguration/LDAPS Server/Advanced -> Enable TLS would be okay
+      - No need to change port
+
+
+      
 ### Design & Maintainability Level
 - More Object-Oriented
   - [ ] Abstract struct/interface
@@ -35,7 +43,7 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 ### Problem solved (coding level)
 - ~~how to reuse method (for the defer concern)~~
   - [x] each defer will be invoked after method. Fix - need to provide private api
-  
+
 - ~~Rename symbols of go always fails~~
   - [x] works in my another vscode env
 
