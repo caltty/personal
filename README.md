@@ -35,7 +35,14 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 ### Problem solved (coding level)
 - ~~how to reuse method (for the defer concern)~~
   - [x] each defer will be invoked after method. Fix - need to provide private api
-- Rename symbols of go always fails
+  
+- ~~Rename symbols of go always fails~~
+  - [x] works in my another vscode env
+
+- ~~go comment has specified usage~~
+  - [x] `// +build linux` for building for linux 
+
+
 
 
 ## Env & Tools

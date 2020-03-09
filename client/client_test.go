@@ -4,10 +4,12 @@ import (
 	"testing"
 )
 
-const URL = "ldap://192.168.179.182:389"
-const BIND_USERNAME = "administrator@hpdm.com"
-const BIND_PASSWORD = "P@ssw0rd"
-const BASE_DN = "dc=hpdm,dc=com"
+const (
+	URL           = "ldap://192.168.179.182:389"
+	BIND_USERNAME = "administrator@hpdm.com"
+	BIND_PASSWORD = "P@ssw0rd"
+	BASE_DN       = "dc=hpdm,dc=com"
+)
 
 func TestConn_Bind_testaccount(t *testing.T) {
 	Conn_Bind(URL, BIND_USERNAME, BIND_PASSWORD)
