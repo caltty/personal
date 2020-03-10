@@ -65,7 +65,7 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, u
 		basedn,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		// fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", username),
-		fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", uid), // TODO: cn or uid or tbd...
+		fmt.Sprintf("(&(objectClass=organizationalPerson)(distinguishedName=%s))", uid), // TODO: cn or uid or tbd...
 		[]string{"dn"},
 		nil,
 	)
