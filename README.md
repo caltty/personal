@@ -56,6 +56,10 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
   - [x] `// +build linux` for building for linux 
 
 
+- VSCode, how to locte to external file?
+  - `go mod vendor` // it will copy into current project
+  - add .gitigore of the vendor folder
+
 
 
 ## Env & Tools
