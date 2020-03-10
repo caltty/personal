@@ -27,7 +27,8 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
   - [ ] Windows AD Server 
 
   - [ ] Apache Directory Server
-    - [X] By default, Apache Directory will create self-signed certficate
+    - [x] Start TLS
+    - [x] By default, Apache Directory will create self-signed certficate
     -   For TLS support, just go to Cofiguration/LDAPS Server/Advanced -> Enable TLS would be okay
       - No need to change port
     - [ ] TLS details
@@ -47,6 +48,9 @@ This is a sample demo to show how integrate ldap api within go to connect a AD o
 
 - ~~Rename symbols of go always fails~~
   - [x] works in my another vscode env
+  - [x] [Go Please! Visual Studio Code + Go Mod + Go Language Server](http://www.matthiassommer.it/programming/go-please-visual-studio-code-go-mod-go-language-server/)
+    - "go.useLanguageServer": true
+    - setx GO111MODULE on
 
 - ~~go comment has specified usage~~
   - [x] `// +build linux` for building for linux 

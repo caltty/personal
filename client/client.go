@@ -55,7 +55,7 @@ func Conn_Search(url string, baseDn string, bindUsername string, bindPassword st
 }
 
 // auth domain account
-func Auth(url string, basedn string, bindusername string, bindpassword string, uid string, password string) {
+func Auth(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
 
 	l, err := conn_bind(url, bindusername, bindpassword)
 	defer l.Close()
@@ -65,7 +65,7 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, u
 		basedn,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		// fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", username),
-		fmt.Sprintf("(&(objectClass=organizationalPerson)(distinguishedName=%s))", uid), // TODO: cn or uid or tbd...
+		fmt.Sprintf("(&(objectClass=organizationalPerson)(distinguishedName=%s))", dn), // TODO: cn or uid or tbd...
 		[]string{"dn"},
 		nil,
 	)
