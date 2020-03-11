@@ -1,12 +1,32 @@
 # Go-LDAP/AD demo
 This is a sample demo to show how integrate ldap api within go to connect a AD or other LDAP server.
 
+
+## Archtecture
+```
+- go-ldap-demo
+
+  - server (go)
+    - ldap-client
+    - http server & api
+
+  - frontend (react)
+    - gui to bind/auth/... ldap
+    - http client
+
+```
+
 ## Dependencies
+
+### Server
 - [go-ldap/ldap](https://github.com/go-ldap/ldap/tree/master/v3)
 - Setting up AD/Server
   - [x] Windows AD Server 
   - [x] Apache Directory Server
 
+### Frontend
+- [React](https://reactjs.org/)
+- [create-react-app](https://github.com/facebook/create-react-app#creating-an-app)
 
 ## TODO
 ### Requriement level
