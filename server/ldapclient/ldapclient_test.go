@@ -6,15 +6,15 @@ import (
 
 // Windows AD Server
 const (
-	URL           = "ldap://192.168.179.182:389"
-	BIND_USERNAME = "administrator@hpdm.com"
-	BIND_PASSWORD = "P@ssw0rd"
-	BASE_DN       = "dc=hpdm,dc=com"
+	url          = "ldap://192.168.179.182:389"
+	bindUsername = "administrator@hpdm.com"
+	bindPassword = "P@ssw0rd"
+	baseDn       = "dc=hpdm,dc=com"
 
-	AUTH_USER_DN = "CN=test,CN=Users,DC=hpdm,DC=com"
-	AUTH_PASSWORD = "P@ssw0rd"
+	authUserDn  = "CN=test,CN=Users,DC=hpdm,DC=com"
+	authPassword = "P@ssw0rd"
 
-	USER_DN       = "CN=test,CN=Users,DC=hpdm,DC=com"
+	userDn = "CN=test,CN=Users,DC=hpdm,DC=com"
 )
 
 // Apache Directory LDAP Server
@@ -31,24 +31,24 @@ const (
 // )
 
 func TestConn_Bind_testaccount(t *testing.T) {
-	Conn_Bind(URL, BIND_USERNAME, BIND_PASSWORD)
+	Bind(url, bindUsername, bindPassword)
 }
 
 func TestConn_Search_Person(t *testing.T) {
-	filter_person := "(&(objectClass=organizationalPerson))"
-	Conn_Search(URL, BASE_DN, BIND_USERNAME, BIND_PASSWORD, filter_person)
+	filterPerson := "(&(objectClass=organizationalPerson))"
+	ConnSearch(url, baseDn, bindUsername, bindPassword, filterPerson)
 }
 
 func Test_Auth(t *testing.T) {
-	Auth(URL, BASE_DN, BIND_USERNAME, BIND_PASSWORD, AUTH_USER_DN, AUTH_PASSWORD)
+	Auth(url, baseDn, bindUsername, bindPassword, authUserDn, authPassword)
 }
 
 func Test_Conn_Modify(t *testing.T) {
 	attrType := "description"
 	attrVals := []string{"An test user description"}
-	Conn_Modify_Attr(URL, BIND_USERNAME, BIND_PASSWORD, USER_DN, attrType, attrVals)
+	ModifyAttr(url, bindUsername, bindPassword, userDn, attrType, attrVals)
 }
 
 func Test_StartTLS(t *testing.T) {
-	StartTLS(URL)
+	StartTLS(url)
 }

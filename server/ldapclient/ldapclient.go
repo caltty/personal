@@ -8,7 +8,7 @@ import (
 	"gopkg.in/ldap.v3"
 )
 
-func conn_bind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
+func connBind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
 	l, err := ldap.DialURL(url)
 	if err != nil {
 		log.Fatal(err)
@@ -24,14 +24,15 @@ func conn_bind(url string, bindusername string, bindpassword string) (*ldap.Conn
 	return l, err
 }
 
-func Conn_Bind(url string, username string, password string) {
-	l, _ := conn_bind(url, username, password)
+// Bind - ldap bind
+func Bind(url string, username string, password string) {
+	l, _ := connBind(url, username, password)
 	defer l.Close()
 }
 
-// This example demonstrates how to use the search interface
-func Conn_Search(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
-	l, err := conn_bind(url, bindUsername, bindPassword)
+// ConnSearch - This example demonstrates how to use the search interface
+func ConnSearch(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
+	l, err := connBind(url, bindUsername, bindPassword)
 	defer l.Close()
 
 	searchRequest := ldap.NewSearchRequest(
@@ -54,10 +55,10 @@ func Conn_Search(url string, baseDn string, bindUsername string, bindPassword st
 	}
 }
 
-// auth domain account
+// Auth - auth domain account
 func Auth(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
 
-	l, err := conn_bind(url, bindusername, bindpassword)
+	l, err := connBind(url, bindusername, bindpassword)
 	defer l.Close()
 
 	// Search for the given username
@@ -94,8 +95,9 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, d
 	}
 }
 
-func Conn_Modify_Attr(url string, bindUsername string, bindPassword string, dn string, attrType string, attrVals []string) {
-	l, err := conn_bind(url, bindUsername, bindPassword)
+// ModifyAttr - modify entry attribute
+func ModifyAttr(url string, bindUsername string, bindPassword string, dn string, attrType string, attrVals []string) {
+	l, err := connBind(url, bindUsername, bindPassword)
 	defer l.Close()
 
 	// Add a description, and replace the mail attributes
@@ -110,7 +112,7 @@ func Conn_Modify_Attr(url string, bindUsername string, bindPassword string, dn s
 	}
 }
 
-// This example demonstrates how to start a TLS connection
+// StartTLS - This example demonstrates how to start a TLS connection
 func StartTLS(url string) {
 	l, err := ldap.DialURL(url)
 	if err != nil {
