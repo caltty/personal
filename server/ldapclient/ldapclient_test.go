@@ -30,20 +30,20 @@ const (
 // 	USER_DN = "employeeNumber=1,ou=users,dc=example,dc=com"
 // )
 
-func TestConn_Bind_testaccount(t *testing.T) {
+func Test_Bind_testaccount(t *testing.T) {
 	Bind(url, bindUsername, bindPassword)
 }
 
-func TestConn_Search_Person(t *testing.T) {
+func Test_Search_Person(t *testing.T) {
 	filterPerson := "(&(objectClass=organizationalPerson))"
-	ConnSearch(url, baseDn, bindUsername, bindPassword, filterPerson)
+	Search(url, baseDn, bindUsername, bindPassword, filterPerson)
 }
 
 func Test_Auth(t *testing.T) {
 	Auth(url, baseDn, bindUsername, bindPassword, authUserDn, authPassword)
 }
 
-func Test_Conn_Modify(t *testing.T) {
+func Test_Modify(t *testing.T) {
 	attrType := "description"
 	attrVals := []string{"An test user description"}
 	ModifyAttr(url, bindUsername, bindPassword, userDn, attrType, attrVals)

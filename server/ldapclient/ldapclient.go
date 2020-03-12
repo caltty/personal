@@ -30,8 +30,8 @@ func Bind(url string, username string, password string) {
 	defer l.Close()
 }
 
-// ConnSearch - This example demonstrates how to use the search interface
-func ConnSearch(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
+// Search - This example demonstrates how to use the search interface
+func Search(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
 	l, err := connBind(url, bindUsername, bindPassword)
 	defer l.Close()
 
