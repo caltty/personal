@@ -1,10 +1,15 @@
-# Go-LDAP/AD demo
-This is a sample demo to show how integrate ldap api within go to connect a AD or other LDAP server.
+# Argon Auth
+This is a sample module to show how to integrate ldap api within go to connect a AD or other LDAP server.
+
+In future, it might extend to other form of authenticatin (which might not be in the scope), such as:
+- database
+- oauth
+- tbd
 
 
 ## Archtecture
 ```
-- go-ldap-demo
+- argon-auth
 
   - server (go)
     - ldap-client
