@@ -1,4 +1,4 @@
-module github.azc.ext.hp.com/cloud-client/go-ldap-demo
+module github.azc.ext.hp.com/Argon/argon_auth
 
 go 1.13
 
