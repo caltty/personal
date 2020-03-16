@@ -1,4 +1,4 @@
-module github.azc.ext.hp.com/Argon/argon_auth
+module github.azc.ext.hp.com/Argon/argon-auth
 
 go 1.13
 
