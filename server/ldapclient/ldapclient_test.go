@@ -51,12 +51,28 @@ func Test_Search_Person(t *testing.T) {
 	sr, _ := Search(conn, baseDn, filterPerson)
 
 	for _, entry := range sr.Entries {
-		fmt.Printf("%s: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+	}
+}
+
+func Test_Search_Person_And_UID(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", testUID);
+
+	sr, _ := Search(conn, baseDn, filter)
+
+	for _, entry := range sr.Entries {
+		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
 	}
 }
 
 func Test_AuthByUid(t *testing.T) {
-	AuthByUID(url, baseDn, bindUsername, bindPassword, testUID, testPassword)
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	AuthByUID(conn, baseDn, testUID, testPassword)
 }
 
 func Test_Modify(t *testing.T) {

@@ -52,22 +52,12 @@ func Search(conn *ldap.Conn, baseDn string, filter string) (*ldap.SearchResult, 
 }
 
 // AuthByUID - auth domain account
-func AuthByUID(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
-
-	l, err := Bind(url, bindusername, bindpassword)
-	defer l.Close()
+func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
 
 	// Search for the given username
-	searchRequest := ldap.NewSearchRequest(
-		basedn,
-		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", dn),
-		//fmt.Sprintf("(&(distinguishedName=%s))", dn), // TODO: cn or uid or tbd...
-		[]string{"dn"},
-		nil,
-	)
+	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", uid);
+	sr, err := Search(conn, baseDn, filter)
 
-	sr, err := l.Search(searchRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,13 +69,7 @@ func AuthByUID(url string, basedn string, bindusername string, bindpassword stri
 	userdn := sr.Entries[0].DN
 
 	// Bind as the user to verify their password
-	err = l.Bind(userdn, password)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Rebind as the read only user for any further queries
-	err = l.Bind(bindusername, bindpassword)
+	err = conn.Bind(userdn, password)
 	if err != nil {
 		log.Fatal(err)
 	}
