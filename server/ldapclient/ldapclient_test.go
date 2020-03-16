@@ -22,6 +22,8 @@ import (
 // Apache Directory LDAP Server
 const (
 	url          = "ldap://localhost:10389"
+	// url_ssl      = "ldaps://localhost:10636"
+	
 	bindUsername = "uid=admin,ou=system"
 	bindPassword = "secret"
 	baseDn       = "dc=shishuwu,dc=com"
@@ -42,13 +44,13 @@ func Test_Bind(t *testing.T) {
 
 	log.Println(conn)
 }
-
 func Test_Search_Person(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
 
 	filterPerson := "(&(objectClass=organizationalPerson))"
-	sr, _ := Search(conn, baseDn, filterPerson)
+	attrs := []string{"dn", "cn"}
+	sr, _ := Search(conn, baseDn, filterPerson, attrs)
 
 	for _, entry := range sr.Entries {
 		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
@@ -59,9 +61,9 @@ func Test_Search_Person_And_UID(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
 
-	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", testUID);
-
-	sr, _ := Search(conn, baseDn, filter)
+	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", testUID)
+	attrs := []string{"dn", "cn"}
+	sr, _ := Search(conn, baseDn, filter, attrs)
 
 	for _, entry := range sr.Entries {
 		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
@@ -76,9 +78,12 @@ func Test_AuthByUid(t *testing.T) {
 }
 
 func Test_Modify(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
 	attrType := "description"
 	attrVals := []string{"An test user description"}
-	ModifyAttr(url, bindUsername, bindPassword, userDn, attrType, attrVals)
+	ModifyAttr(conn, userDn, attrType, attrVals)
 }
 
 func Test_StartTLS(t *testing.T) {

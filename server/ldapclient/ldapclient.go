@@ -9,38 +9,30 @@ import (
 )
 
 // Bind - bind ldap server
-func Bind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
+func Bind(url string, username string, password string) (*ldap.Conn, error) {
 	conn, err := ldap.DialURL(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("connect success!")
+	log.Printf("Dial url %s success!", url)
 
-	err = conn.Bind(bindusername, bindpassword)
+	err = conn.Bind(username, password)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("bind success!")
+	log.Printf("Bind %s success!", username)
 
 	return conn, err
 }
 
-// // Bind - ldap bind
-// func Bind(url string, username string, password string) {
-// 	l, _ := bind(url, username, password)
-// 	defer l.Close()
-// }
-
-// Search - This example demonstrates how to use the search interface
-func Search(conn *ldap.Conn, baseDn string, filter string) (*ldap.SearchResult, error){
+// Search - search from base dn, return with specified attributes
+func Search(conn *ldap.Conn, baseDn string, filter string, attrs []string) (*ldap.SearchResult, error) {
 
 	searchRequest := ldap.NewSearchRequest(
-		// "dc=example,dc=com", // The base dn to search
-		baseDn,
+		baseDn, // "dc=example,dc=com", // The base dn to search
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		// "(&(objectClass=organizationalPerson))", // The filter to apply
-		filter,
-		[]string{"dn", "cn"}, // A list attributes to retrieve
+		filter, // "(&(objectClass=organizationalPerson))", // The filter to apply
+		attrs, // []string{"dn", "cn"}, // A list attributes to retrieve
 		nil,
 	)
 
@@ -55,8 +47,9 @@ func Search(conn *ldap.Conn, baseDn string, filter string) (*ldap.SearchResult, 
 func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
 
 	// Search for the given username
-	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", uid);
-	sr, err := Search(conn, baseDn, filter)
+	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", uid)
+	attrs := []string{"dn"}
+	sr, err := Search(conn, baseDn, filter, attrs)
 
 	if err != nil {
 		log.Fatal(err)
@@ -73,20 +66,19 @@ func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Auth uid: %s (dn: %s) success!", uid, userdn)
 }
 
 // ModifyAttr - modify entry attribute
-func ModifyAttr(url string, bindUsername string, bindPassword string, dn string, attrType string, attrVals []string) {
-	l, err := Bind(url, bindUsername, bindPassword)
-	defer l.Close()
+func ModifyAttr(conn *ldap.Conn, dn string, attrType string, attrVals []string) {
 
 	// Add a description, and replace the mail attributes
-	modify := ldap.NewModifyRequest(dn, nil)
+	modifyRequest := ldap.NewModifyRequest(dn, nil)
 	// modify.Add("description", []string{"An test user yyyyy"})
-	modify.Replace(attrType, attrVals)
+	modifyRequest.Replace(attrType, attrVals)
 	// modify.Replace("mail", []string{"user@example.org"})
 
-	err = l.Modify(modify)
+	err := conn.Modify(modifyRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
