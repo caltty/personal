@@ -56,7 +56,7 @@ func Search(url string, baseDn string, bindUsername string, bindPassword string,
 }
 
 // Auth - auth domain account
-func Auth(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
+func Auth(url string, basedn string, bindusername string, bindpassword string, dn string, password string) error {
 
 	l, err := connBind(url, bindusername, bindpassword)
 	defer l.Close()
@@ -93,6 +93,8 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, d
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return err
 }
 
 // ModifyAttr - modify entry attribute
