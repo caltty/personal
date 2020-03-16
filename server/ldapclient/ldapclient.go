@@ -8,32 +8,31 @@ import (
 	"gopkg.in/ldap.v3"
 )
 
-func connBind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
-	l, err := ldap.DialURL(url)
+// Bind - bind ldap server
+func Bind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
+	conn, err := ldap.DialURL(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("connect success!")
 
-	err = l.Bind(bindusername, bindpassword)
+	err = conn.Bind(bindusername, bindpassword)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("bind success!")
 
-	return l, err
+	return conn, err
 }
 
-// Bind - ldap bind
-func Bind(url string, username string, password string) {
-	l, _ := connBind(url, username, password)
-	defer l.Close()
-}
+// // Bind - ldap bind
+// func Bind(url string, username string, password string) {
+// 	l, _ := bind(url, username, password)
+// 	defer l.Close()
+// }
 
 // Search - This example demonstrates how to use the search interface
-func Search(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
-	l, err := connBind(url, bindUsername, bindPassword)
-	defer l.Close()
+func Search(conn *ldap.Conn, baseDn string, filter string) (*ldap.SearchResult, error){
 
 	searchRequest := ldap.NewSearchRequest(
 		// "dc=example,dc=com", // The base dn to search
@@ -45,28 +44,25 @@ func Search(url string, baseDn string, bindUsername string, bindPassword string,
 		nil,
 	)
 
-	sr, err := l.Search(searchRequest)
+	sr, err := conn.Search(searchRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	for _, entry := range sr.Entries {
-		fmt.Printf("%s: %v\n", entry.DN, entry.GetAttributeValue("cn"))
-	}
+	return sr, err
 }
 
-// Auth - auth domain account
-func Auth(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
+// AuthByUID - auth domain account
+func AuthByUID(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
 
-	l, err := connBind(url, bindusername, bindpassword)
+	l, err := Bind(url, bindusername, bindpassword)
 	defer l.Close()
 
 	// Search for the given username
 	searchRequest := ldap.NewSearchRequest(
 		basedn,
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		// fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", username),
-		fmt.Sprintf("(&(objectClass=organizationalPerson)(distinguishedName=%s))", dn), // TODO: cn or uid or tbd...
+		fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", dn),
+		//fmt.Sprintf("(&(distinguishedName=%s))", dn), // TODO: cn or uid or tbd...
 		[]string{"dn"},
 		nil,
 	)
@@ -97,7 +93,7 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, d
 
 // ModifyAttr - modify entry attribute
 func ModifyAttr(url string, bindUsername string, bindPassword string, dn string, attrType string, attrVals []string) {
-	l, err := connBind(url, bindUsername, bindPassword)
+	l, err := Bind(url, bindUsername, bindPassword)
 	defer l.Close()
 
 	// Add a description, and replace the mail attributes
