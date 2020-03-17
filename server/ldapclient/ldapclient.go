@@ -69,6 +69,15 @@ func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
 	log.Printf("Auth uid: %s (dn: %s) success!", uid, userdn)
 }
 
+// AuthByDN - auth domain account
+func AuthByDN(conn *ldap.Conn, baseDn string, dn string, password string) {
+	err := conn.Bind(dn, password)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Auth (dn: %s) success!", dn)
+}
+
 // ModifyAttr - modify entry attribute
 func ModifyAttr(conn *ldap.Conn, dn string, attrType string, attrVals []string) {
 
@@ -102,6 +111,7 @@ func StartTLS(url string) {
 
 	// Operations via l are now encrypted
 }
+
 // SearchPaging - paging
 func SearchPaging(conn *ldap.Conn, baseDn string, filter string, attrs []string, pageSize uint32) {
 
@@ -116,7 +126,6 @@ func SearchPaging(conn *ldap.Conn, baseDn string, filter string, attrs []string,
 		controls,
 	)
 
-	
 	for {
 
 		response, err := conn.Search(searchRequest)

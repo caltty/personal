@@ -33,6 +33,8 @@ const (
 	testUID      = "test"
 
 	jasonSAMAccountName = "jasons"
+	jasonDn = "cn=Jason Shi,ou=users,dc=shishuwu,dc=com"
+	jasonPassword = "secret"
 
 	userDn = "uid=test,ou=users,dc=shishuwu,dc=com"
 )
@@ -102,6 +104,13 @@ func Test_AuthByUid(t *testing.T) {
 	defer conn.Close()
 
 	AuthByUID(conn, baseDn, testUID, testPassword)
+}
+
+func Test_AuthByDN(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	AuthByDN(conn, baseDn, jasonDn, jasonPassword)
 }
 
 func Test_Modify(t *testing.T) {
