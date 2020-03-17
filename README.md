@@ -29,6 +29,19 @@ In future, it might extend to other form of authenticatin (which might not be in
   - [x] Windows AD Server 
   - [x] Apache Directory Server
 
+- Docker env
+  - [ ] Mocked LDAP Server
+    - [x] create docker for ldap-server
+
+      ```
+      docker pull shishuwu/ldap-server
+      docker run -it --rm -p 10389:10389 shishuwu/ldap-server:no-ssl
+
+      docker run -it --rm -p 10389:10389 -p 10636:10636 shishuwu/ldap-server:tls
+      ```
+    - 
+
+
 ### Frontend
 - [React](https://reactjs.org/)
 - [create-react-app](https://github.com/facebook/create-react-app#creating-an-app)

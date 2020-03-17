@@ -1,52 +1,89 @@
 package ldapclient
 
 import (
+	"fmt"
+	"log"
 	"testing"
 )
 
 // Windows AD Server
-const (
-	url          = "ldap://192.168.179.182:389"
-	bindUsername = "administrator@hpdm.com"
-	bindPassword = "P@ssw0rd"
-	baseDn       = "dc=hpdm,dc=com"
-
-	authUserDn  = "CN=test,CN=Users,DC=hpdm,DC=com"
-	authPassword = "P@ssw0rd"
-
-	userDn = "CN=test,CN=Users,DC=hpdm,DC=com"
-)
-
-// Apache Directory LDAP Server
 // const (
-// 	URL           = "ldap://localhost:10389"
-// 	BIND_USERNAME = "uid=admin,ou=system"
-// 	BIND_PASSWORD = "secret"
-// 	BASE_DN       = "dc=example,dc=com"
+// 	url          = "ldap://192.168.179.182:389"
+// 	bindUsername = "administrator@hpdm.com"
+// 	bindPassword = "P@ssw0rd"
+// 	baseDn       = "dc=hpdm,dc=com"
 
-// 	AUTH_USER_DN = "cn=Jason Shi,ou=users,dc=example,dc=com"
-// 	AUTH_PASSWORD = "test"
+// 	authUserDn  = "CN=test,CN=Users,DC=hpdm,DC=com"
+// 	authPassword = "P@ssw0rd"
 
-// 	USER_DN = "employeeNumber=1,ou=users,dc=example,dc=com"
+// 	userDn = "CN=test,CN=Users,DC=hpdm,DC=com"
 // )
 
-func Test_Bind_testaccount(t *testing.T) {
-	Bind(url, bindUsername, bindPassword)
-}
+// Apache Directory LDAP Server
+const (
+	url          = "ldap://localhost:10389"
+	// url_ssl      = "ldaps://localhost:10636"
+	
+	bindUsername = "uid=admin,ou=system"
+	bindPassword = "secret"
+	baseDn       = "dc=shishuwu,dc=com"
 
+	testDn       = "uid=test,ou=users,dc=shishuwu,dc=com"
+	testPassword = "secret"
+	testUID      = "test"
+
+	userDn = "uid=test,ou=users,dc=shishuwu,dc=com"
+)
+
+func Test_Bind(t *testing.T) {
+	conn, err := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(conn)
+}
 func Test_Search_Person(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
 	filterPerson := "(&(objectClass=organizationalPerson))"
-	Search(url, baseDn, bindUsername, bindPassword, filterPerson)
+	attrs := []string{"dn", "cn"}
+	sr, _ := Search(conn, baseDn, filterPerson, attrs)
+
+	for _, entry := range sr.Entries {
+		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+	}
 }
 
-func Test_Auth(t *testing.T) {
-	Auth(url, baseDn, bindUsername, bindPassword, authUserDn, authPassword)
+func Test_Search_Person_And_UID(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", testUID)
+	attrs := []string{"dn", "cn"}
+	sr, _ := Search(conn, baseDn, filter, attrs)
+
+	for _, entry := range sr.Entries {
+		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+	}
+}
+
+func Test_AuthByUid(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	AuthByUID(conn, baseDn, testUID, testPassword)
 }
 
 func Test_Modify(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
 	attrType := "description"
 	attrVals := []string{"An test user description"}
-	ModifyAttr(url, bindUsername, bindPassword, userDn, attrType, attrVals)
+	ModifyAttr(conn, userDn, attrType, attrVals)
 }
 
 func Test_StartTLS(t *testing.T) {

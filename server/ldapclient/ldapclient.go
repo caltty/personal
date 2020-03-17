@@ -8,70 +8,49 @@ import (
 	"gopkg.in/ldap.v3"
 )
 
-func connBind(url string, bindusername string, bindpassword string) (*ldap.Conn, error) {
-	l, err := ldap.DialURL(url)
+// Bind - bind ldap server
+func Bind(url string, username string, password string) (*ldap.Conn, error) {
+	conn, err := ldap.DialURL(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("connect success!")
+	log.Printf("Dial url %s success!", url)
 
-	err = l.Bind(bindusername, bindpassword)
+	err = conn.Bind(username, password)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("bind success!")
+	log.Printf("Bind %s success!", username)
 
-	return l, err
+	return conn, err
 }
 
-// Bind - ldap bind
-func Bind(url string, username string, password string) {
-	l, _ := connBind(url, username, password)
-	defer l.Close()
-}
-
-// Search - This example demonstrates how to use the search interface
-func Search(url string, baseDn string, bindUsername string, bindPassword string, filter string) {
-	l, err := connBind(url, bindUsername, bindPassword)
-	defer l.Close()
+// Search - search from base dn, return with specified attributes
+func Search(conn *ldap.Conn, baseDn string, filter string, attrs []string) (*ldap.SearchResult, error) {
 
 	searchRequest := ldap.NewSearchRequest(
-		// "dc=example,dc=com", // The base dn to search
-		baseDn,
+		baseDn, // "dc=example,dc=com", // The base dn to search
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		// "(&(objectClass=organizationalPerson))", // The filter to apply
-		filter,
-		[]string{"dn", "cn"}, // A list attributes to retrieve
+		filter, // "(&(objectClass=organizationalPerson))", // The filter to apply
+		attrs, // []string{"dn", "cn"}, // A list attributes to retrieve
 		nil,
 	)
 
-	sr, err := l.Search(searchRequest)
+	sr, err := conn.Search(searchRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	for _, entry := range sr.Entries {
-		fmt.Printf("%s: %v\n", entry.DN, entry.GetAttributeValue("cn"))
-	}
+	return sr, err
 }
 
-// Auth - auth domain account
-func Auth(url string, basedn string, bindusername string, bindpassword string, dn string, password string) {
-
-	l, err := connBind(url, bindusername, bindpassword)
-	defer l.Close()
+// AuthByUID - auth domain account
+func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
 
 	// Search for the given username
-	searchRequest := ldap.NewSearchRequest(
-		basedn,
-		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-		// fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", username),
-		fmt.Sprintf("(&(objectClass=organizationalPerson)(distinguishedName=%s))", dn), // TODO: cn or uid or tbd...
-		[]string{"dn"},
-		nil,
-	)
+	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", uid)
+	attrs := []string{"dn"}
+	sr, err := Search(conn, baseDn, filter, attrs)
 
-	sr, err := l.Search(searchRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,30 +62,23 @@ func Auth(url string, basedn string, bindusername string, bindpassword string, d
 	userdn := sr.Entries[0].DN
 
 	// Bind as the user to verify their password
-	err = l.Bind(userdn, password)
+	err = conn.Bind(userdn, password)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Rebind as the read only user for any further queries
-	err = l.Bind(bindusername, bindpassword)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Printf("Auth uid: %s (dn: %s) success!", uid, userdn)
 }
 
 // ModifyAttr - modify entry attribute
-func ModifyAttr(url string, bindUsername string, bindPassword string, dn string, attrType string, attrVals []string) {
-	l, err := connBind(url, bindUsername, bindPassword)
-	defer l.Close()
+func ModifyAttr(conn *ldap.Conn, dn string, attrType string, attrVals []string) {
 
 	// Add a description, and replace the mail attributes
-	modify := ldap.NewModifyRequest(dn, nil)
+	modifyRequest := ldap.NewModifyRequest(dn, nil)
 	// modify.Add("description", []string{"An test user yyyyy"})
-	modify.Replace(attrType, attrVals)
+	modifyRequest.Replace(attrType, attrVals)
 	// modify.Replace("mail", []string{"user@example.org"})
 
-	err = l.Modify(modify)
+	err := conn.Modify(modifyRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
