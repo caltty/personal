@@ -32,6 +32,8 @@ const (
 	testPassword = "secret"
 	testUID      = "test"
 
+	jasonSAMAccountName = "jasons"
+
 	userDn = "uid=test,ou=users,dc=shishuwu,dc=com"
 )
 
@@ -57,7 +59,20 @@ func Test_Search_Person(t *testing.T) {
 	}
 }
 
-func Test_Search_Person_And_UID(t *testing.T) {
+func Test_Search_Person_sAMAccountName(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	filterPerson := fmt.Sprintf("(&(objectClass=organizationalPerson)(sAMAccountName=%s))", jasonSAMAccountName)
+	attrs := []string{"dn", "cn"}
+	sr, _ := Search(conn, baseDn, filterPerson, attrs)
+
+	for _, entry := range sr.Entries {
+		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+	}
+}
+
+func Test_Search_Person_UID(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
 
