@@ -72,6 +72,17 @@ func Test_Search_Person_sAMAccountName(t *testing.T) {
 	}
 }
 
+func Test_Search_Person_Paging(t *testing.T) {
+	conn, _ := Bind(url, bindUsername, bindPassword)
+	defer conn.Close()
+
+	filterPerson := "(&(objectClass=organizationalPerson))"
+	attrs := []string{"dn", "cn"}
+	SearchPaging(conn, baseDn, filterPerson, attrs, 1)
+
+}
+
+
 func Test_Search_Person_UID(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
@@ -84,6 +95,7 @@ func Test_Search_Person_UID(t *testing.T) {
 		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
 	}
 }
+
 
 func Test_AuthByUid(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)

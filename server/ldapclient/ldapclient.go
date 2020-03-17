@@ -32,7 +32,7 @@ func Search(conn *ldap.Conn, baseDn string, filter string, attrs []string) (*lda
 		baseDn, // "dc=example,dc=com", // The base dn to search
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		filter, // "(&(objectClass=organizationalPerson))", // The filter to apply
-		attrs, // []string{"dn", "cn"}, // A list attributes to retrieve
+		attrs,  // []string{"dn", "cn"}, // A list attributes to retrieve
 		nil,
 	)
 
@@ -101,4 +101,43 @@ func StartTLS(url string) {
 	}
 
 	// Operations via l are now encrypted
+}
+// SearchPaging - paging
+func SearchPaging(conn *ldap.Conn, baseDn string, filter string, attrs []string, pageSize uint32) {
+
+	pagingControl := ldap.NewControlPaging(pageSize)
+	controls := []ldap.Control{pagingControl}
+
+	searchRequest := ldap.NewSearchRequest(
+		baseDn, // "dc=example,dc=com", // The base dn to search
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		filter, // "(&(objectClass=organizationalPerson))", // The filter to apply
+		attrs,  // []string{"dn", "cn"}, // A list attributes to retrieve
+		controls,
+	)
+
+	
+	for {
+
+		response, err := conn.Search(searchRequest)
+		if err != nil {
+			log.Fatalf("Failed to execute search request: %s", err.Error())
+		}
+
+		// [do something with the response entries]
+		for _, entry := range response.Entries {
+			fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
+		}
+		// In order to prepare the next request, we check if the response
+		// contains another ControlPaging object and a not-empty cookie and
+		// copy that cookie into our pagingControl object:
+		updatedControl := ldap.FindControl(response.Controls, ldap.ControlTypePaging)
+		if ctrl, ok := updatedControl.(*ldap.ControlPaging); ctrl != nil && ok && len(ctrl.Cookie) != 0 {
+			pagingControl.SetCookie(ctrl.Cookie)
+			continue
+		}
+		// If no new paging information is available or the cookie is empty, we
+		// are done with the pagination.
+		break
+	}
 }
