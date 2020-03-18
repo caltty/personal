@@ -44,7 +44,7 @@ func Search(conn *ldap.Conn, baseDn string, filter string, attrs []string) (*lda
 }
 
 // AuthByUID - auth domain account
-func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
+func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) (bool, error) {
 
 	// Search for the given username
 	filter := fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", uid)
@@ -65,17 +65,21 @@ func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) {
 	err = conn.Bind(userdn, password)
 	if err != nil {
 		log.Fatal(err)
+		return false, err
 	}
 	log.Printf("Auth uid: %s (dn: %s) success!", uid, userdn)
+	return true, nil
 }
 
 // AuthByDN - auth domain account
-func AuthByDN(conn *ldap.Conn, baseDn string, dn string, password string) {
+func AuthByDN(conn *ldap.Conn, baseDn string, dn string, password string)(bool, error) {
 	err := conn.Bind(dn, password)
 	if err != nil {
 		log.Fatal(err)
+		return false, err
 	}
 	log.Printf("Auth (dn: %s) success!", dn)
+	return true, nil
 }
 
 // ModifyAttr - modify entry attribute

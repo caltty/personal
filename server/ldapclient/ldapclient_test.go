@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
 
 // Windows AD Server
@@ -48,6 +49,7 @@ func Test_Bind(t *testing.T) {
 
 	log.Println(conn)
 }
+
 func Test_Search_Person(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
@@ -103,14 +105,18 @@ func Test_AuthByUid(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
 
-	AuthByUID(conn, baseDn, testUID, testPassword)
+	succ, err := AuthByUID(conn, baseDn, testUID, testPassword)
+	assert.True(t, succ)
+	assert.Nil(t, err)
 }
 
 func Test_AuthByDN(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
 
-	AuthByDN(conn, baseDn, jasonDn, jasonPassword)
+	succ, err := AuthByDN(conn, baseDn, jasonDn, jasonPassword)
+	assert.True(t, succ)
+	assert.Nil(t, err)
 }
 
 func Test_Modify(t *testing.T) {
