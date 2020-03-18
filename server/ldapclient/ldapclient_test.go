@@ -11,7 +11,7 @@ const (
 	bindPassword = "P@ssw0rd"
 	baseDn       = "dc=hpdm,dc=com"
 
-	authUserDn  = "CN=test,CN=Users,DC=hpdm,DC=com"
+	authUserDn   = "CN=test,CN=Users,DC=hpdm,DC=com"
 	authPassword = "P@ssw0rd"
 
 	userDn = "CN=test,CN=Users,DC=hpdm,DC=com"

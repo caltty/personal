@@ -10,7 +10,7 @@ import (
 
 const (
 	SIGN_KEY      = "sign_key"
-	URL           = "ldap://192.168.153.164:389"
+	URL           = "ldap://localhost:389"
 	BIND_USERNAME = "Administrator@sh.argon"
 	BIND_PASSWORD = "myxiaoenen@20191017"
 	BASE_DN       = "dc=sh,dc=argon"
@@ -22,26 +22,30 @@ func StartServer() {
 	api.Use(rest.DefaultDevStack...)
 
 	authTokenMiddleware := &AuthTokenMiddleware{
-		Realm:         "Token Authentication Realm",
-		SecretKey:     SIGN_KEY,
-		Timeout:       30,
+		Realm: "Token Authentication Realm",
+		//		SecretKey:     SIGN_KEY,
+		Timeout:       1,
 		Authenticator: LdapAuthenticate,
 	}
+	authTokenMiddleware.Init()
 	api.Use(&rest.IfMiddleware{
 		Condition: func(request *rest.Request) bool {
-			return request.URL.Path != "/login"
+			return request.URL.Path != "/login" && request.URL.Path != "/logout"
 		},
 		IfTrue: authTokenMiddleware,
 	})
 	router, err := rest.MakeRouter(
 		rest.Post("/login", authTokenMiddleware.LoginHandler),
-		rest.Post("/modify", ModifyAttributes),
+		rest.Post("/modify-attribute", ModifyAttributes),
+		rest.Post("/logout", authTokenMiddleware.LogoutHandler),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	api.SetApp(router)
-	log.Fatal(http.ListenAndServe(":9080", api.MakeHandler()))
+	//	log.Fatal(http.ListenAndServe(":9080", api.MakeHandler()))
+
+	log.Fatal(http.ListenAndServeTLS(":9443", "server.cert", "server.key", api.MakeHandler()))
 }
 
 // LdapAttr struct
@@ -62,7 +66,8 @@ func ModifyAttributes(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	ldapclient.ModifyAttr(URL, BIND_USERNAME, BIND_PASSWORD, attrToBeModified.Dn, attrToBeModified.AttrType, attrToBeModified.AttrVals)
-	w.WriteHeader(http.StatusOK)
+	//	w.WriteHeader(http.StatusOK)
+	SuccessResponse(w)
 }
 
 // LdapAuthenticate performs ldap authentication
