@@ -12,13 +12,15 @@ import (
 func Bind(url string, username string, password string) (*ldap.Conn, error) {
 	conn, err := ldap.DialURL(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	log.Printf("Dial url %s success!", url)
 
 	err = conn.Bind(username, password)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	log.Printf("Bind %s success!", username)
 
@@ -38,7 +40,8 @@ func Search(conn *ldap.Conn, baseDn string, filter string, attrs []string) (*lda
 
 	sr, err := conn.Search(searchRequest)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	return sr, err
 }
@@ -52,7 +55,8 @@ func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) (boo
 	sr, err := Search(conn, baseDn, filter, attrs)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return false, err
 	}
 
 	if len(sr.Entries) != 1 {
@@ -64,7 +68,7 @@ func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) (boo
 	// Bind as the user to verify their password
 	err = conn.Bind(userdn, password)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return false, err
 	}
 	log.Printf("Auth uid: %s (dn: %s) success!", uid, userdn)
@@ -75,7 +79,7 @@ func AuthByUID(conn *ldap.Conn, baseDn string, uid string, password string) (boo
 func AuthByDN(conn *ldap.Conn, baseDn string, dn string, password string) (bool, error) {
 	err := conn.Bind(dn, password)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return false, err
 	}
 	log.Printf("Auth (dn: %s) success!", dn)
@@ -83,7 +87,7 @@ func AuthByDN(conn *ldap.Conn, baseDn string, dn string, password string) (bool,
 }
 
 // ModifyAttr - modify entry attribute
-func ModifyAttr(conn *ldap.Conn, dn string, attrType string, attrVals []string) {
+func ModifyAttr(conn *ldap.Conn, dn string, attrType string, attrVals []string) (bool, error) {
 
 	// Add a description, and replace the mail attributes
 	modifyRequest := ldap.NewModifyRequest(dn, nil)
@@ -93,15 +97,19 @@ func ModifyAttr(conn *ldap.Conn, dn string, attrType string, attrVals []string) 
 
 	err := conn.Modify(modifyRequest)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return false, err
 	}
+
+	return true, nil
 }
 
 // StartTLS - This example demonstrates how to start a TLS connection
-func StartTLS(url string) {
+func StartTLS(url string) (*ldap.Conn, error) {
 	l, err := ldap.DialURL(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	defer l.Close()
 
@@ -110,9 +118,10 @@ func StartTLS(url string) {
 	err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 	log.Println(l.TLSConnectionState())
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
-
+	return l, nil
 	// Operations via l are now encrypted
 }
 
