@@ -1,6 +1,6 @@
 package main
 
-import server "github.azc.ext.hp.com/cloud-client/go-ldap-demo/server/http"
+import server "github.azc.ext.hp.com/Argon/argon-auth/server/http"
 
 func main() {
 	server.StartServer()

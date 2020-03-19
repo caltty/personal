@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.azc.ext.hp.com/cloud-client/go-ldap-demo/server/ldapclient"
+	"github.azc.ext.hp.com/Argon/argon-auth/server/ldapclient"
 	"github.com/ant0ine/go-json-rest/rest"
 )
 
@@ -65,19 +65,23 @@ func ModifyAttributes(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 
-	ldapclient.ModifyAttr(URL, BIND_USERNAME, BIND_PASSWORD, attrToBeModified.Dn, attrToBeModified.AttrType, attrToBeModified.AttrVals)
+	conn, _ := ldapclient.Bind(URL, BIND_USERNAME, BIND_PASSWORD)
+	defer conn.Close()
+	ldapclient.ModifyAttr(conn, attrToBeModified.Dn, attrToBeModified.AttrType, attrToBeModified.AttrVals)
 	//	w.WriteHeader(http.StatusOK)
 	SuccessResponse(w)
 }
 
 // LdapAuthenticate performs ldap authentication
 func LdapAuthenticate(username string, password string) bool {
-	err := ldapclient.Auth(URL, BASE_DN, BIND_USERNAME, BIND_PASSWORD, username, password)
+	conn, _ := ldapclient.Bind(URL, BIND_USERNAME, BIND_PASSWORD)
+	defer conn.Close()
+	succ, err := ldapclient.AuthByDN(conn, BASE_DN, username, password)
 
 	if err != nil {
-		log.Fatal(err)
+		//		log.Fatal(err)
 		return false
 	}
 
-	return true
+	return succ
 }
