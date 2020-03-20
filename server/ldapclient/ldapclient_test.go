@@ -2,9 +2,9 @@ package ldapclient
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"log"
 	"testing"
-	"github.com/stretchr/testify/assert"
 )
 
 // Windows AD Server
@@ -22,9 +22,9 @@ import (
 
 // Apache Directory LDAP Server
 const (
-	url          = "ldap://localhost:10389"
+	url = "ldap://localhost:10389"
 	// url_ssl      = "ldaps://localhost:10636"
-	
+
 	bindUsername = "uid=admin,ou=system"
 	bindPassword = "secret"
 	baseDn       = "dc=shishuwu,dc=com"
@@ -34,8 +34,8 @@ const (
 	testUID      = "test"
 
 	jasonSAMAccountName = "jasons"
-	jasonDn = "cn=Jason Shi,ou=users,dc=shishuwu,dc=com"
-	jasonPassword = "secret"
+	jasonDn             = "cn=Jason Shi,ou=users,dc=shishuwu,dc=com"
+	jasonPassword       = "secret"
 
 	userDn = "uid=test,ou=users,dc=shishuwu,dc=com"
 )
@@ -86,7 +86,6 @@ func Test_Search_Person_Paging(t *testing.T) {
 
 }
 
-
 func Test_Search_Person_UID(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
 	defer conn.Close()
@@ -99,7 +98,6 @@ func Test_Search_Person_UID(t *testing.T) {
 		fmt.Printf("dn: %s, cn: %v\n", entry.DN, entry.GetAttributeValue("cn"))
 	}
 }
-
 
 func Test_AuthByUid(t *testing.T) {
 	conn, _ := Bind(url, bindUsername, bindPassword)
