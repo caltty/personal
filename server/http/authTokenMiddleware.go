@@ -46,26 +46,8 @@ type AuthTokenMiddleware struct {
 
 //Init
 func (mw *AuthTokenMiddleware) Init() {
-	//	mw.revokedTokens = make(map[string]int64)
-	mw.manager = new(SecretKeyManagerFactory).GetSecretKeyManagerManager(MemoryManager)
+	mw.manager = new(SecretKeyManagerFactory).GetSecretKeyManagerManager(config.JwtAuthentication.SecretkeyManagerType)
 	mw.manager.ManagerInit()
-
-	// go func() {
-	// 	for {
-	// 		time.Sleep(time.Minute * 60)
-	// 		for tokenString, exp := range mw.revokedTokens {
-	// 			if exp < time.Now().Unix() {
-	// 				delete(mw.revokedTokens, tokenString)
-	// 			}
-	// 		}
-	// 	}
-	// }()
-}
-
-// Account struct
-type Account struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
 }
 
 // AuthToken struct
@@ -84,10 +66,6 @@ func (mw *AuthTokenMiddleware) MiddlewareFunc(handler rest.HandlerFunc) rest.Han
 	if mw.Authenticator == nil {
 		log.Fatal("Authenticator is required")
 	}
-
-	// if mw.SecretKey == "" {
-	// 	log.Fatal("Secret Key is required")
-	// }
 
 	if mw.Authorizator == nil {
 		mw.Authorizator = func(userId string, request *rest.Request) bool {
@@ -119,16 +97,6 @@ func (mw *AuthTokenMiddleware) validToken(token *jwt.Token) bool {
 	if token == nil || !token.Valid {
 		return false
 	}
-
-	// tokenString, err := token.SignedString([]byte(mw.SecretKey))
-
-	// if err != nil {
-	// 	return false
-	// }
-	// _, exist := mw.revokedTokens[tokenString]
-	// if exist {
-	// 	return false
-	// }
 
 	return true
 }
@@ -181,11 +149,18 @@ func (mw *AuthTokenMiddleware) LoginHandler(writer rest.ResponseWriter, request 
 		return
 	}
 
-	account := &Account{}
-	err := request.DecodeJsonPayload(&account)
+	// ok, err := ValidateRequestInput(*request.Request, Account{})
+	// if err != nil || ok == false {
+	// 	mw.badRequest(writer, err.Error())
+	// 	return
+	// }
 
-	if err != nil || account.Username == "" || account.Password == "" {
-		mw.badRequest(writer, "bad request parameters")
+	account := &Account{}
+	// err = request.DecodeJsonPayload(&account)
+	err := ValidateAndDecodeRequestPayload(*request.Request, account)
+
+	if err != nil {
+		mw.badRequest(writer, err.Error())
 		return
 	}
 
@@ -234,10 +209,6 @@ func (mw *AuthTokenMiddleware) LogoutHandler(w rest.ResponseWriter, r *rest.Requ
 		mw.badRequest(w, "Did not log in")
 		return
 	}
-
-	// tokenString, _ := token.SignedString([]byte(mw.SecretKey))
-
-	// mw.revokedTokens[tokenString] = token.Claims.(*JwtTokenClaims).IssuedAt
 	mw.manager.DeleteSecretKeyByUser(token.Claims.(*JwtTokenClaims).Userid)
 
 	SuccessResponse(w)

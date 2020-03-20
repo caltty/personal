@@ -1,30 +1,28 @@
 package server
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.azc.ext.hp.com/Argon/argon-auth/server/ldapclient"
 	"github.com/ant0ine/go-json-rest/rest"
+	"gopkg.in/ldap.v3"
 )
 
-const (
-	SIGN_KEY      = "sign_key"
-	URL           = "ldap://localhost:389"
-	BIND_USERNAME = "Administrator@sh.argon"
-	BIND_PASSWORD = "myxiaoenen@20191017"
-	BASE_DN       = "dc=sh,dc=argon"
-)
+var config *Config
 
 // StartServer lauches to handle requests
 func StartServer() {
+	loadConfig()
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 
 	authTokenMiddleware := &AuthTokenMiddleware{
-		Realm: "Token Authentication Realm",
-		//		SecretKey:     SIGN_KEY,
-		Timeout:       1,
+		Realm:         "Token Authentication Realm",
+		Timeout:       time.Duration(config.JwtAuthentication.TokenDuration),
 		Authenticator: LdapAuthenticate,
 	}
 	authTokenMiddleware.Init()
@@ -43,43 +41,67 @@ func StartServer() {
 		log.Fatal(err)
 	}
 	api.SetApp(router)
-	//	log.Fatal(http.ListenAndServe(":9080", api.MakeHandler()))
 
 	log.Fatal(http.ListenAndServeTLS(":9443", "server.cert", "server.key", api.MakeHandler()))
 }
 
-// LdapAttr struct
-type LdapAttr struct {
-	Dn       string
-	AttrType string
-	AttrVals []string
+func loadConfig() {
+	configJSON, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		log.Fatal("Failed to open config file: ", err.Error())
+	}
+
+	ok, err := ValidateInput(configJSON, Config{})
+	if err != nil || ok == false {
+		log.Fatal("Invlid configuration: ", err.Error())
+	}
+
+	config = new(Config)
+	err = json.Unmarshal(configJSON, config)
+	if err != nil {
+		log.Fatal("Failed to parse config file: ", err.Error())
+	}
+
+}
+
+func getLdapConnection() (*ldap.Conn, error) {
+	return ldapclient.Bind(config.Ldap.URL, config.Ldap.BindUser, config.Ldap.BindPassword)
 }
 
 // ModifyAttributes performs modification of attributes
 func ModifyAttributes(w rest.ResponseWriter, r *rest.Request) {
-	attrToBeModified := &LdapAttr{}
-	err := r.DecodeJsonPayload(&attrToBeModified)
+	// ok, err := ValidateRequestInput(*r.Request, LdapAttr{})
+	// if err != nil || ok == false {
+	// 	ErrorResponse(w, http.StatusBadRequest, err.Error())
+	// 	return
+	// }
 
+	attrToBeModified := &LdapAttr{}
+	//	err = r.DecodeJsonPayload(&attrToBeModified)
+	err := ValidateAndDecodeRequestPayload(*r.Request, attrToBeModified)
 	if err != nil {
-		rest.Error(w, "The payload for modifying attributes is not correct", http.StatusBadRequest)
+		ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	conn, _ := ldapclient.Bind(URL, BIND_USERNAME, BIND_PASSWORD)
+	conn, err := getLdapConnection()
+	if err != nil {
+		ErrorResponse(w, http.StatusInternalServerError, "LDAP server is not available")
+		return
+	}
 	defer conn.Close()
 	ldapclient.ModifyAttr(conn, attrToBeModified.Dn, attrToBeModified.AttrType, attrToBeModified.AttrVals)
-	//	w.WriteHeader(http.StatusOK)
 	SuccessResponse(w)
 }
 
 // LdapAuthenticate performs ldap authentication
 func LdapAuthenticate(username string, password string) bool {
-	conn, _ := ldapclient.Bind(URL, BIND_USERNAME, BIND_PASSWORD)
+	conn, _ := ldapclient.Bind(config.Ldap.URL, config.Ldap.BindUser, config.Ldap.BindPassword)
 	defer conn.Close()
-	succ, err := ldapclient.AuthByDN(conn, BASE_DN, username, password)
+	succ, err := ldapclient.AuthByDN(conn, config.Ldap.BaseDn, username, password)
 
 	if err != nil {
-		//		log.Fatal(err)
+		log.Printf(err.Error())
 		return false
 	}
 

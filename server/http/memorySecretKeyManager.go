@@ -23,7 +23,7 @@ func (manager *MemorySecretKeyManager) GC() {
 			delete(manager.UserTokenExpiries, key)
 		}
 	}
-	time.AfterFunc(time.Minute*1, func() { manager.GC() })
+	time.AfterFunc(time.Minute*time.Duration(config.JwtAuthentication.MemorySecretKeyManagerSettings.CleanupInterval), func() { manager.GC() })
 }
 
 func (manager *MemorySecretKeyManager) CreateSecretKeyByUser(userid string, expiry int64) string {
