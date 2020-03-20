@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,6 +17,8 @@ var config *Config
 
 // StartServer lauches to handle requests
 func StartServer() {
+	log.Println("Starting server...")
+	log.Println("Loading configurations...")
 	loadConfig()
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
@@ -42,7 +45,8 @@ func StartServer() {
 	}
 	api.SetApp(router)
 
-	log.Fatal(http.ListenAndServeTLS(":9443", "server.cert", "server.key", api.MakeHandler()))
+	log.Printf("Server has started:   https://localhost:%d", config.Server.Port)
+	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%v", config.Server.Port), config.Server.SslCertificateFile, config.Server.SslKeyFile, api.MakeHandler()))
 }
 
 func loadConfig() {
@@ -62,6 +66,7 @@ func loadConfig() {
 		log.Fatal("Failed to parse config file: ", err.Error())
 	}
 
+	log.Println(string(configJSON))
 }
 
 func getLdapConnection() (*ldap.Conn, error) {

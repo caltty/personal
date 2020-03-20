@@ -20,8 +20,16 @@ type MemorySecretKeyManagerSettings struct {
 	CleanupInterval int `json:"cleanupInterval" validate:"notBlank"`
 }
 
+//AuthServerSettings is an option in the config file
+type AuthServerSettings struct {
+	Port               int    `json:"port" validate:"notBlank"`
+	SslCertificateFile string `json:"sslCertificateFile" validate:"notBlank"`
+	SslKeyFile         string `json:"sslKeyFile" validate:"notBlank"`
+}
+
 //Config is the data model of the config file
 type Config struct {
+	Server            AuthServerSettings        `json:"server" validate:"required"`
 	Ldap              LdapSettings              `json:"ldap" validate:"required"`
 	JwtAuthentication JwtAuthenticationSettings `json:"jwtAuthentication" validate:"required"`
 }

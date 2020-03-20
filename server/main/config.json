@@ -1,4 +1,9 @@
 {
+    "server" : {
+        "port" : 9443,
+        "sslCertificateFile" : "server.cert",
+        "sslKeyFile" : "server.key"
+    },
     "ldap" : {
         "url" : "ldap://localhost:389",
         "bindUser" : "Administrator@sh.argon",
