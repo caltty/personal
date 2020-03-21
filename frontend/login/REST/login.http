@@ -1,0 +1,4 @@
+post https://localhost:9443/login
+Content-Type: application/json
+
+{"username": "cn=Jason Shi,ou=users,dc=shishuwu,dc=com","password": "secret"}
