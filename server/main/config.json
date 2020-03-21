@@ -1,0 +1,22 @@
+{
+    "server" : {
+        "port" : 9443,
+        "sslCertificateFile" : "server.cert",
+        "sslKeyFile" : "server.key"
+    },
+    "ldap" : {
+        "url" : "ldap://localhost:389",
+        "bindUser" : "Administrator@sh.argon",
+        "bindPassword" : "myxiaoenen@20191017",
+        "baseDn" : "dc=sh,dc=argon"
+    },
+    "jwtAuthentication" : {
+        "tokenDuration" : 30,
+        "secretKeyManagerType" : "memory",
+        "memorySecretKeyManagerSettings" : { 
+            "cleanupInterval" : 1
+        }
+    }
+
+
+}
