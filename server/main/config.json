@@ -6,9 +6,9 @@
     },
     "ldap": {
         "url": "http://localhost:10389",
-        "bindUser": "Administrator@sh.argon",
-        "bindPassword": "myxiaoenen@20191017",
-        "baseDn": "dc=sh,dc=argon"
+        "bindUser": "uid=admin,ou=system",
+        "bindPassword": "secret",
+        "baseDn": "dc=shishuwu,dc=com"
     },
     "jwtAuthentication": {
         "tokenDuration": 30,

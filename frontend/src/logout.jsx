@@ -24,7 +24,7 @@ export default class extends React.Component {
                     <button className="btn btn-primary pull-right" onClick={this.handleClickLogout}>Logout</button>
                 </div>
                 <div className="row">
-                    <div className="text-center mdtext" >welcome to dsjkfldsjfkld</div>
+                    <div className="text-center mdtext" >welcome to Argon ladp authentication</div>
                 </div>
             </div>
         )
