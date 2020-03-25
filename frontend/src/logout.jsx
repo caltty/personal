@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line 
 import ReactDOM from 'react-dom';
 
 export default class extends React.Component {
@@ -12,7 +13,7 @@ export default class extends React.Component {
         });
 
         const result = await response.json();
-        if (result["errorCode"] == 0) {
+        if (result["errorCode"] === '0') {
             window.location.href = "/"
         }
         localStorage.removeItem("token")
@@ -21,10 +22,10 @@ export default class extends React.Component {
         return (
             <div>
                 <div className="row">
-                    <button className="btn btn-primary pull-right" onClick={this.handleClickLogout}>Logout</button>
+                    <div className="pull-right col-md-1"><button className="btn btn-primary outline:none;" onClick={this.handleClickLogout}>Logout</button></div>
                 </div>
                 <div className="row">
-                    <div className="text-center mdtext" >welcome to Argon ladp authentication</div>
+                    <div className="text-center mdtext" >Welcome to argon ladp authentication</div>
                 </div>
             </div>
         )

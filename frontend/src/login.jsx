@@ -1,37 +1,53 @@
 import React from 'react';
+// eslint-disable-next-line 
 import ReactDOM from 'react-dom';
 import './index.css';
-import logo from './logo.svg';
+import logo from './logo.svg'
+
 
 export default class extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            password: '',
-            errorCode: '',
-            token: ''
+    username = React.createRef()
+    password = React.createRef()
+ 
+    handleClickLogin = async () => {
+        const data = {
+            username:this.username.current.value,
+            password:this.password.current.value,
         }
-    }
-
-    handleChangeUserName(e) {
-        this.setState({
-            username: e.target.value
-        })
-    }
-
-    handleChangePassword(e) {
-        this.setState({
-            password: e.target.value
-        })
-    }
-
-    async handleClickLogin() {
-
         const message = {
-            "username": "CN=testuser2,OU=argonldap,OU=shanghai,DC=sh,DC=argon",
-            "password": "Shanghai2010"
+            /**"username": "testuser1@hpdm.sh",
+            "password": "Shanghai2010"*/
+            "username": data.username,
+            "password": data.password
         }
+        /**var http = require('http')
+        var opt = {
+            host:'https://localhost',
+            port: '3000',
+            method: 'POST',
+            path: 'https://localhost:9443/login',
+            headers:{
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem("token")
+                },
+                body: JSON.stringify(message)
+            }
+        }
+
+        var body = '';
+        var req = http.request(opt,function(res){
+            console.log("Got response: "+ res.statusCode);
+            res.on('data',function(d){
+            body += d;
+            }).on('end',function(){
+                console.log(res.headers)
+                console.log(body)
+            });
+        }).on('error',function(e){
+            console.log("Got error: " + e.message);
+        })
+        req.end();*/
 
         const response = await fetch("https://localhost:9443/login", {
             method: 'POST',
@@ -44,12 +60,12 @@ export default class extends React.Component {
 
         const result = await response.json();
         const { token, errorCode } = result;
-
-        if (errorCode == 0) {
+        console.log(errorCode);
+        if (errorCode === '0') {
+            localStorage.setItem("token", 'Bearer ' + token)
+            console.log(localStorage.getItem("token"))
             window.location.href = "/logout"
         }
-
-        localStorage.setItem("token", 'Bearer ' + result["token"])
     }
 
     render() {
@@ -75,8 +91,8 @@ export default class extends React.Component {
                                     <input type="text"
                                         name="username"
                                         className="form-control"
-                                        onChange={this.handleChangeUserName.bind(this)}
-                                        defaultValue={this.state.username} />
+                                        ref={this.username}
+                                         />
                                 </div>
                             </div>
 
@@ -87,13 +103,13 @@ export default class extends React.Component {
                                         name="password"
                                         id="password"
                                         className="form-control"
-                                        onChange={this.handleChangePassword.bind(this)}
-                                        defaultValue={this.state.password} />
+                                        ref={this.password}
+                                         />
                                 </div>
                             </div>
                             <div className="form-group">
                                 <div className="col-sm-2 col-sm-offset-4">
-                                    <button className="btn btn-primary  btn-block" onClick={this.handleClickLogin} > login </button>
+                                    <button className="btn btn-primary  btn-block outline:none;" onClick={this.handleClickLogin} > Login </button>
                                 </div>
                             </div>
                         </div>
