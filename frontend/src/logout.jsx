@@ -14,9 +14,9 @@ export default class extends React.Component {
 
         const result = await response.json();
         if (result["errorCode"] === '0') {
+            localStorage.removeItem("token")
             window.location.href = "/"
-        }
-        localStorage.removeItem("token")
+        }   
     }
     render() {
         return (

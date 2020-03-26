@@ -1,9 +1,16 @@
 import React from 'react';
 // eslint-disable-next-line 
-import ReactDOM from 'react-dom';
+import ReactDOM, { render } from 'react-dom';
 import './index.css';
-import logo from './logo.svg'
+import logo from './logo.svg';
+import {Modal} from 'antd';
 
+function display() {
+    Modal.error({
+        title: 'Error',
+        content: 'Username or password is not correct',
+      });
+} 
 
 export default class extends React.Component {
     username = React.createRef()
@@ -20,34 +27,6 @@ export default class extends React.Component {
             "username": data.username,
             "password": data.password
         }
-        /**var http = require('http')
-        var opt = {
-            host:'https://localhost',
-            port: '3000',
-            method: 'POST',
-            path: 'https://localhost:9443/login',
-            headers:{
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem("token")
-                },
-                body: JSON.stringify(message)
-            }
-        }
-
-        var body = '';
-        var req = http.request(opt,function(res){
-            console.log("Got response: "+ res.statusCode);
-            res.on('data',function(d){
-            body += d;
-            }).on('end',function(){
-                console.log(res.headers)
-                console.log(body)
-            });
-        }).on('error',function(e){
-            console.log("Got error: " + e.message);
-        })
-        req.end();*/
 
         const response = await fetch("https://localhost:9443/login", {
             method: 'POST',
@@ -65,9 +44,10 @@ export default class extends React.Component {
             localStorage.setItem("token", 'Bearer ' + token)
             console.log(localStorage.getItem("token"))
             window.location.href = "/logout"
+        }else{
+            display();
         }
     }
-
     render() {
         console.log(logo);
         return (
