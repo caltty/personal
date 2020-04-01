@@ -42,6 +42,7 @@ export default class extends React.Component {
         console.log(errorCode);
         if (errorCode === '0') {
             localStorage.setItem("token", 'Bearer ' + token)
+            localStorage.setItem("username",this.username)
             console.log(localStorage.getItem("token"))
             window.location.href = "/logout"
         }else{
