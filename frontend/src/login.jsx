@@ -3,31 +3,36 @@ import React from 'react';
 import ReactDOM, { render } from 'react-dom';
 import './index.css';
 import logo from './logo.svg';
-import {Modal} from 'antd';
+import { Modal, Input  } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 
 function display() {
     Modal.error({
         title: 'Error',
         content: 'Username or password is not correct',
-      });
-} 
+    });
+}
 
 export default class extends React.Component {
-    username = React.createRef()
-    password = React.createRef()
- 
-    handleClickLogin = async () => {
-        const data = {
-            username:this.username.current.value,
-            password:this.password.current.value,
+    constructor(props){
+        super(props);
+        this.state = {
+            username:"",
+            password:"",
         }
+    }
+    
+    onChange = e =>{
+        this.setState({[e.target.name]:e.target.value})
+    }
+
+    handleClickLogin = async () => {
         const message = {
             /**"username": "testuser1@hpdm.sh",
             "password": "Shanghai2010"*/
-            "username": data.username,
-            "password": data.password
+            "username": this.state.username,
+            "password": this.state.password
         }
-
         const response = await fetch("https://localhost:9443/login", {
             method: 'POST',
             headers: {
@@ -42,15 +47,14 @@ export default class extends React.Component {
         console.log(errorCode);
         if (errorCode === '0') {
             localStorage.setItem("token", 'Bearer ' + token)
-            localStorage.setItem("username",this.username)
             console.log(localStorage.getItem("token"))
             window.location.href = "/logout"
-        }else{
+        } else {
             display();
         }
     }
     render() {
-        console.log(logo);
+        const {username,password} = this.state;
         return (
             <div className="container">
                 <br />
@@ -69,23 +73,14 @@ export default class extends React.Component {
                             <div className="form-group">
                                 <label htmlFor="" className="control-label col-sm-2">User Name:</label>
                                 <div className="col-sm-4">
-                                    <input type="text"
-                                        name="username"
-                                        className="form-control"
-                                        ref={this.username}
-                                         />
+                                    <Input placeholder="username" name="username" prefix={<UserOutlined />} className="autocomplete:false" value = {username} onChange ={this.onChange}/>
                                 </div>
                             </div>
 
                             <div className="form-group">
                                 <label htmlFor="password" className="col-sm-2 control-label">Password:</label>
                                 <div className="col-sm-4">
-                                    <input type="password"
-                                        name="password"
-                                        id="password"
-                                        className="form-control"
-                                        ref={this.password}
-                                         />
+                                    <Input.Password name="password" placeholder="input password" className="autocomplete:false" value = {password} onChange ={this.onChange}/>
                                 </div>
                             </div>
                             <div className="form-group">

@@ -8,3 +8,33 @@ body {
     padding-top: 20px;
     font-size: 20px;
 }
+
+.lougoutButton {
+    margin-right: 20px;
+    background-color: transparent;
+    border-style: none;
+    outline: none;
+}
+
+.lougoutButton:hover {
+    color: #40a9FF;
+}
+
+.lougoutButton:active {
+    color: #40a9FF;
+    box-shadow: 0 5px transparent;
+    transform: translateY(4px);
+    outline: none;
+}
+
+#components-layout-demo-top-side-2 .logo {
+    width: 120px;
+    height: 31px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px 28px 16px 0;
+    float: left;
+}
+
+.site-layout-background {
+    background: #fff;
+}
