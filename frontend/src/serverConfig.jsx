@@ -2,8 +2,9 @@ import React from 'react';
 // eslint-disable-next-line 
 import ReactDOM from 'react-dom';
 import { Modal } from 'antd';
-import {Input } from 'antd';
+import { Input } from 'antd';
 import Config from "./config"
+import { getServerConfig } from "./api"
 
 function displaySuccess() {
     Modal.success({
@@ -25,12 +26,7 @@ export default class ServerConfig extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            server: {
-                port: "9443",
-                sslCertifcateFile: "server.cert",
-                sslKeyFile: "server.key"
-            },
-
+            server: {},
             ldap: {
                 url: "ldap://15.15.182.177:389",
                 bindUser: "Administrator@hpdm.sh",
@@ -53,10 +49,16 @@ export default class ServerConfig extends React.Component {
                 IdleTimeout: "10"
             }
         }
+
+        getServerConfig().then(p => {
+            this.setState({ server: p.data })
+        })
     }
 
-    onChange = e =>{
-        this.setState({[e.target.name]:e.target.value})
+    onChange = e => {
+        let { server } = this.state
+        server[e.target.name] = e.target.value
+        this.setState({ server })
     }
 
     getConfigurations = async () => {
@@ -86,28 +88,28 @@ export default class ServerConfig extends React.Component {
 
     }
 
-    handleSave = async() =>{
+    handleSave = async () => {
         const message = {
             "server": {
                 "port": this.state.server.port,
                 "sslCertificateFile": this.state.server.sslCertifcateFile,
                 "sslKeyFile": this.state.server.sslKeyFile
             },
-            "ldap" : {
-                "url" : this.state.ldap.url,
-                "bindUser" : this.state.ldap.bindUser,
-                "bindPassword" : this.state.ldap.bindPassword,
-                "baseDn" : this.state.ldap.baseDn
+            "ldap": {
+                "url": this.state.ldap.url,
+                "bindUser": this.state.ldap.bindUser,
+                "bindPassword": this.state.ldap.bindPassword,
+                "baseDn": this.state.ldap.baseDn
             },
-            "jwtAuthentication" : {
-                "tokenDuration" : this.state.jwtAuthentcation.tokenDuration,
-                "secretKeyManagerType" : this.state.jwtAuthentcation.secretKeyManagerType,
-                "memorySecretKeyManagerSettings" : { 
-                    "cleanupInterval" : this.state.jwtAuthentcation.memorySecretKeyManagerSettings.cleanUpInterval
+            "jwtAuthentication": {
+                "tokenDuration": this.state.jwtAuthentcation.tokenDuration,
+                "secretKeyManagerType": this.state.jwtAuthentcation.secretKeyManagerType,
+                "memorySecretKeyManagerSettings": {
+                    "cleanupInterval": this.state.jwtAuthentcation.memorySecretKeyManagerSettings.cleanUpInterval
                 },
-                "redisSecretKeyManagerSettings" : { 
+                "redisSecretKeyManagerSettings": {
                     "serverAddress": this.state.redisSecretKeyManagerSettings.serverAddress,
-                    "maxIdle" : this.state.redisSecretKeyManagerSettings.maxIdle,
+                    "maxIdle": this.state.redisSecretKeyManagerSettings.maxIdle,
                     "MaxActive": this.state.redisSecretKeyManagerSettings.MaxActive,
                     "IdleTimeout": this.state.redisSecretKeyManagerSettings.IdleTimeout
                 }
@@ -132,7 +134,7 @@ export default class ServerConfig extends React.Component {
     }
 
     render() {
-        const {port,sslCertifcateFile,sslKeyFile} = this.state;
+        const { server } = this.state;
         //this.getConfigurations();
         return (
             <Config>
@@ -141,26 +143,26 @@ export default class ServerConfig extends React.Component {
                     <div className="form-group">
                         <label htmlFor="" className="control-label col-sm-2">Port:</label>
                         <div className="col-sm-4">
-                            <Input placeholder="port" name="port"   value={port} onChange={this.onChange} />
+                            <Input placeholder="port" name="port" value={server.port} onChange={this.onChange} />
                         </div>
                     </div>
                     <div className="form-group">
                         <label htmlFor="" className="control-label col-sm-2">Ssl certifcateFile:</label>
                         <div className="col-sm-4">
-                            <Input placeholder="sslCertifcateFile" name="sslCertifcateFile"   value={sslCertifcateFile} onChange={this.onChange} />
+                            <Input placeholder="sslCertifcateFile" name="certFile" value={server.certFile} onChange={this.onChange} />
                         </div>
                     </div>
                     <div className="form-group">
                         <label htmlFor="" className="control-label col-sm-2">Ssl key file:</label>
                         <div className="col-sm-4">
-                            <Input placeholder="sslKeyFile" name="sslKeyFile"   value={sslKeyFile} onChange={this.onChange} />
+                            <Input placeholder="sslKeyFile" name="sslKey" value={server.sslKey} onChange={this.onChange} />
                         </div>
                     </div>
                     <div className="form-group">
-                                <div className="col-sm-2 col-sm-offset-4">
-                                    <button className="btn btn-primary  btn-block outline:none;" onClick={this.handleSave} > Save </button>
-                                </div>
-                            </div>
+                        <div className="col-sm-2 col-sm-offset-4">
+                            <button className="btn btn-primary  btn-block outline:none;" onClick={this.handleSave} > Save </button>
+                        </div>
+                    </div>
                 </div>
             </Config>
         )
